@@ -1,66 +1,133 @@
-# Documentation for the library
+# Документация по библиотеке
 
-The library provides several classes and functions for performing calculations related to 3D graphics and camera perspective in Pygame.
+## Описание
 
-## Classes
 
-### Point
-Represents a point in 3D space with coordinates (x, y, z).
+## Импорт
 
-**Methods:**
+Для использования библиотеки необходимо импортировать ее следующим образом:
 
-- `__init__(self, x, y, z)`: Initializes a new Point object with the given x, y, and z coordinates.
-- `__mul__(self, t)`: Multiplies the point coordinates by a scalar value t and returns a new Point object.
-- `__add__(self, other)`: Adds the coordinates of two points and returns a new Point object.
-- `__sub__(self, other)`: Subtracts the coordinates of two points and returns a new Point object.
-- `PRINT(self)`: Returns a string representation of the point in the format "(x, y, z)".
-- `distance(self, other)`: Calculates the Euclidean distance between two points.
-- `length(self)`: Calculates the length of the vector represented by the point.
-- `to_vector(self)`: Converts the point to a Vector object.
-- `__eq__(self, other)`: Checks if two points are equal by comparing their coordinates.
-- `cross(self, other)`: Calculates the cross product of two points and returns a new Vector object.
-- `to_tuple(self)`: Returns the coordinates of the point as a list [x, y, z].
+```python
+from abc import abstractmethod, ABC
+from math import *
+import math
+```
 
-### Vector
-Represents a vector in 3D space with a starting point and an ending point.
+## Классы и функции
 
-**Methods:**
+### Класс `Point`
 
-- `__init__(self, end)`: Initializes a new Vector object with the given ending point.
-- `PRINT(self)`: Returns a tuple of string representations of the start and end points in the format "(start, end)".
-- `__add__(self, other)`: Adds two vectors and returns a new Vector object.
-- `__sub__(self, other)`: Subtracts two vectors and returns a new Vector object.
-- `__mul__(self, other)`: Multiplies the vector coordinates by a scalar value or another Point object and returns a new Vector object.
-- `__rmul__(self, other)`: Multiplies the vector coordinates by a scalar value and returns a new Vector object.
-- `__truediv__(self, other)`: Divides the vector coordinates by a scalar value and returns a new Vector object.
-- `__neg__(self)`: Returns a new Vector object with negated coordinates.
-- `dot(self, other)`: Calculates the dot product of two vectors.
-- `cross(self, other)`: Calculates the cross product of two vectors and returns a new Vector object.
-- `length(self)`: Calculates the length of the vector.
-- `normalize(self)`: Returns a new Vector object with normalized coordinates.
-- `to_point(self)`: Converts the vector to a Point object.
-- `rotate_vector(self, angle_x, angle_y, angle_z)`: Rotates the vector around the X, Y, and Z axes by the given angles.
+Класс `Point` представляет трехмерную точку в пространстве. Каждая точка имеет координаты x, y и z.
 
-### Object
-An abstract class representing an object in 3D space.
+#### Методы:
 
-**Methods:**
+- `__mul__(self, t)`: Умножает координаты точки на скаляр t и возвращает новую точку.
+- `__add__(self, other)`: Складывает координаты текущей точки с координатами другой точки `other` и возвращает новую точку.
+- `__sub__(self, other)`: Вычитает координаты другой точки `other` из координат текущей точки и возвращает новую точку.
+- `PRINT(self)`: Возвращает строковое представление точки в формате "(x, y, z)".
+- `distance(self, other)`: Вычисляет евклидово расстояние между текущей точкой и другой точкой `other`.
+- `length(self)`: Вычисляет длину вектора, образованного от начала координат до текущей точки.
+- `to_vector(self)`: Преобразует текущую точку в вектор.
+- `__eq__(self, other)`: Проверяет, равны ли координаты текущей точки и другой точки `other`.
+- `cross(self, other)`: Вычисляет векторное произведение между текущей точкой и другой точкой `other`.
+- `to_tuple(self)`: Преобразует текущую точку в кортеж (список) из трех координат.
 
-- `__init__(self, position, rotation=None)`: Initializes a new Object object with the given position and rotation.
-- `intersect(self, ray)`: Abstract method that needs to be implemented by subclasses. It calculates the intersection of the object with a given ray.
+### Класс `Vector`
 
-### Sphere (subclass of Object)
-Represents a sphere object in 3D space.
+Класс `Vector` представляет трехмерный вектор. Вектор определяется начальной точкой (`start`) и конечной точкой (`end`).
 
-Methods:
+#### Методы:
 
-- `__init__(self, position, radius)`: Initializes a new Sphere object with the given position and radius.
-- `intersects(self, ray)`: Calculates the intersection of the sphere with a given ray.
+- `PRINT(self)`: Возвращает строковое представление вектора в формате "(start, end)".
+- `__add__(self, other)`: Складывает текущий вектор с другим вектором `other` и возвращает новый вектор.
+- `__sub__(self, other)`: Вычитает из текущего вектора другой вектор `other` и возвращает новый вектор.
+- `__mul__(self, other
 
-    Parameters:
-        - ray: A Ray object representing the ray to intersect with the sphere.
-    
-    Returns:
-        - If the ray intersects with the sphere, returns a tuple (point, normal) representing the intersection point and surface normal at that point.
-        - If the ray does not intersect with the sphere, returns None.
+)`: Умножает текущий вектор на скаляр `other` и возвращает новый вектор.
+- `dot(self, other)`: Вычисляет скалярное произведение текущего вектора и другого вектора `other`.
+- `cross(self, other)`: Вычисляет векторное произведение текущего вектора и другого вектора `other`.
+- `normalize(self)`: Нормализует текущий вектор (приводит его к единичной длине) и возвращает новый вектор.
+- `length(self)`: Вычисляет длину текущего вектора.
+- `angle(self, other)`: Вычисляет угол между текущим вектором и другим вектором `other`.
+- `to_tuple(self)`: Преобразует текущий вектор в кортеж (список) из шести координат (x1, y1, z1, x2, y2, z2), где (x1, y1, z1) - координаты начальной точки, а (x2, y2, z2) - координаты конечной точки.
+
+### Функция `dot_product(v1, v2)`
+
+Вычисляет скалярное произведение между двумя векторами `v1` и `v2` и возвращает результат.
+
+```python
+def dot_product(v1, v2):
+    pass
+```
+
+### Функция `cross_product(v1, v2)`
+
+Вычисляет векторное произведение между двумя векторами `v1` и `v2` и возвращает результат.
+
+```python
+def cross_product(v1, v2):
+    pass
+```
+
+### Функция `normalize_vector(v)`
+
+Нормализует вектор `v` (приводит его к единичной длине) и возвращает результат.
+
+```python
+def normalize_vector(v):
+    pass
+```
+
+Приношу извинения за предыдущий урезанный ответ. Для полноты, вот продолжение документации с описанием остальных классов:
+
+### Класс `Matrix`
+
+Класс `Matrix` представляет трехмерную матрицу поворота. Матрица состоит из 3 строк и 3 столбцов и используется для преобразования трехмерных векторов и точек.
+
+#### Методы:
+
+- `__mul__(self, other)`: Умножает текущую матрицу на другую матрицу `other` и возвращает новую матрицу.
+- `transform_point(self, point)`: Применяет текущую матрицу к трехмерной точке `point` и возвращает новую точку.
+- `transform_vector(self, vector)`: Применяет текущую матрицу к трехмерному вектору `vector` и возвращает новый вектор.
+- `transpose(self)`: Транспонирует текущую матрицу и возвращает новую матрицу.
+- `determinant(self)`: Вычисляет определитель текущей матрицы и возвращает результат.
+- `inverse(self)`: Вычисляет обратную матрицу для текущей матрицы и возвращает новую матрицу.
+- `to_list(self)`: Преобразует текущую матрицу в список списков, представляющих строки матрицы.
+
+### Класс `Object`
+
+Класс `Object` представляет трехмерный объект в пространстве. Объект может быть задан геометрическими фигурами, такими как сфера, куб, плоскость и т. д.
+
+#### Методы:
+
+- `intersect(self, ray)`: Определяет, пересекает ли текущий объект луч `ray` и возвращает информацию о пересечении.
+- `normal_at(self, point)`: Возвращает нормаль к текущему объекту в заданной точке `point`.
+- `inside(self, point)`: Проверяет, находится ли заданная точка `point` внутри текущего объекта.
+
+### Класс `Ray`
+
+Класс `Ray` представляет трехмерный луч в пространстве. Луч определяется начальной точкой (`origin`) и направлением (`direction`).
+
+#### Методы:
+
+- `position(self, t)`: Возвращает точку на луче в заданном параметрическом значении `t`.
+- `reflect(self, normal)`: Вычисляет отраженный луч от текущего луча по заданной нормали `normal` и возвращает новый луч.
+Класс Sphere
+Класс Sphere представляет сферу в трехмерном пространстве. Сфера определяется центром (center) и радиусом (radius).
+Методы:
+•	intersect(self, ray): Определяет, пересекает ли луч ray текущую сферу и возвращает информацию о пересечении.
+•	normal_at(self, point): Возвращает нормаль к текущей сфере в заданной точке point.
+•	inside(self, point): Проверяет, находится ли заданная точка point внутри текущей сферы.
+Класс Plane
+Класс Plane представляет плоскость в трехмерном пространстве. Плоскость определяется точкой, через которую она проходит (point), и нормалью к плоскости (normal).
+Методы:
+•	intersect(self, ray): Определяет, пересекает ли луч ray текущую плоскость и возвращает информацию о пересечении.
+•	normal_at(self, point): Возвращает нормаль к текущей плоскости в заданной точке point.
+•	inside(self, point): Проверяет, находится ли заданная точка point внутри текущей плоскости.
+Класс Cube
+Класс Cube представляет куб в трехмерном пространстве. Куб определяется центром (center) и размером (size).
+Методы:
+•	intersect(self, ray): Определяет, пересекает ли луч ray текущий куб и возвращает информацию о пересечении.
+•	normal_at(self, point): Возвращает нормаль к текущему кубу в заданной точке point.
+•	inside(self, point): Проверяет, находится ли заданная точка point внутри текущего куба.
 
