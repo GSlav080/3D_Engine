@@ -1,105 +1,88 @@
 import time
 from main import *
-#
-#
-# sphere = Sphere(Point(0, 0, 2), 3)
-#
-# height = 600
-# wight = 800
-#
-# # lock_at =  Vector(Point(0, 0, -10))
-# lock_at = Vector(sphere.position)
-# # Создаем камеру с позицией (0, 0, 10) и направлением взгляда на точку (0, 0, 0)
-# camera = Camera(Point(0, 0, 10), lock_at, 90, 100, height, wight)
-#
-#
-#
-#
-# # sq = Cube(Point(-4, 0, 1),4)
-# # map.append(sq)
-# map =Map()
-# map.append(sphere)
-#
-# # sphere2 =Sphere(Point(-3, 0, 5), 1)
-# # sphere3 = Sphere(Point(-3, 0, 2), 3)
-# # map.append(sphere2)
-# # map.append(sphere3)
-#
-# coordsystem = CoordinateSystem(10)
-# canvas = Console(map, camera, coordsystem)
-# canvas.draw()
-
-import pygame
-from pygame.locals import *
-
-# Инициализация Pygame
-pygame.init()
-
-map = Map()
-
-map.append(Sphere(Point(0, 0, -5), 1))
-
-map.append(Cube(Point(0, 0, -1), 1))
-
-# Определение размеров экрана
-screen_width = 200
-screen_height = 100
-
-# Создание окна
 
 
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Camera Example")
+sphere = Sphere(Point(0, 0, -15), 3)
+sphere2 = Sphere(Point(-6, 4, -5), 4)
+height = 40
+wight = 40
 
-# Создание объекта камеры
-camera = Camera(position=Point(0, 0, 2), lookAt=Vector(Point(0, 0, -1)), FOV=90, drawDistance=100,
-                screenWidth=screen_width, screenHeight=screen_height)
+# lock_at =  Vector(Point(0, 0, -10))
+lock_at = Vector(sphere.position)
+# Создаем камеру с позицией (0, 0
+# , 10) и направлением взгляда на точку (0, 0, 0)
+camera = Camera(Point(0, 0, 10), lock_at, 90, 100, height, wight)
 
-# Создание карты с объектами
 
 
-# Игровой цикл
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            running = False
-        elif event.type == KEYDOWN:
-            # Обработка нажатия клавиш
-            camera.handle_key_event(event.key)
 
-    # Обновление камеры
 
-    # Очистка экрана
-    screen.fill((0, 0, 0))
+map_1 =Map()
 
-    # Генерация лучей для рендеринга
-    rays = camera.generate_rays()
-    # Рендеринг сцены с использованием лучей
-    for y in range(camera.screenHeight):
-        for x in range(camera.screenWidth):
-            ray = rays[y][x]
 
-            # Выполняйте проверку пересечений лучей с объектами на карте
-            # и отрисовывайте объекты на экране с учетом их позиции и цвета
+sq1 = Cube(Point(0, 0, -3),2)
+sq2 = Cube(Point(-10, 0, 2),2)
+sq3 = Cube(Point(2, 0, -6),2)
 
-            for obj in map.objects:
-                intersection_point = obj.intersects(ray)
-                if intersection_point:
-                    # Вычисляем расстояние от камеры до пересечения луча и объекта
-                    distance = (intersection_point - camera.position).length()
 
-                    # Вычисляем интенсивность цвета в зависимости от расстояния
-                    intensity = max(0, (distance / obj.position.length())) % 256
+map_1.append(sphere)
+map_1.append(sq1)
+map_1.append(sq2)
+map_1.append(sq3)
 
-                    # Выполняйте отрисовку объекта на экране с учетом интенсивности цвета
-                    color = (int(256 * intensity) % 256, 0, 0)
-                    pygame.draw.circle(screen, color, (x, y), 1)
 
-    # Отображение на экране
-    pygame.display.flip()
 
-# Завершение Pygame
 
-pygame.quit()
-#
+coordsystem = CoordinateSystem(10)
+canvas = Console(map_1, camera, coordsystem)
+canvas.draw()
+
+
+
+import keyboard
+import time
+
+Flag = True
+while True:
+    try:
+        key = keyboard.read_key()  # получаем значение нажатой клавиши
+        if key == "e":
+            if Flag:
+                sphers = map_1.objects[0]
+
+                r = sphers.radius
+                pos = sphers.position
+                for i in range(r, 1, -1):
+                    map_1.objects[0].radius = i
+                    canvas.map = map_1
+                    canvas.draw()
+
+                for i in range(0, r+1, 1):
+                    map_1.objects[0] = Cube(pos,i)
+                    canvas.draw()
+                Flag = False
+            else:
+                cube = map_1.objects[0]
+                pos = cube.position
+                size = cube.size
+                for i in range(size, 1, -1):
+                    map_1.objects[0].radius = i
+                    canvas.map = map_1
+                    canvas.draw()
+
+                for i in range(0, size + 1, 1):
+                    map_1.objects[0] = Sphere(pos, i)
+                    canvas.draw()
+                Flag=True
+                
+
+
+        
+        canvas.camera.ivent(key=key)
+        canvas.draw()
+
+    except:
+        break
+
+
+
