@@ -2,7 +2,6 @@ from abc import abstractmethod, ABC
 from math import *
 import math
 
-from pygame.locals import *
 
 
 def Angel(v, angle_x, angle_y, angle_z):
@@ -201,7 +200,6 @@ class Sphere(Object):
         return distance <= 0
 
 
-import math
 
 
 class CoordinateSystem:
@@ -232,7 +230,6 @@ class Ray:
 
 
 import math
-import pygame
 
 class Event:
     event = []
@@ -250,7 +247,7 @@ class Camera:
         self.screenDistance = (1 / math.tan(math.radians(self.FOV / 2)))
         self.screenWidth = screenWidth
         self.screenHeight = screenHeight
-        self.movement_speed = 0.2
+        self.movement_speed = 0.5
         self.rotation_speed = 10
 
     def calculate_yaw(self):
@@ -262,83 +259,82 @@ class Camera:
         pitch = math.asin(self.lookAt.to_point().y)
         return math.degrees(pitch)
 
-    def handle_key_event(self, key):
-        if key == K_ESCAPE:
+    def ivent(self, key):
+        if key == 'p':
             running = False
-        elif key == K_w:
+        elif key == 'w':
             self.position += self.lookAt.to_point() * self.movement_speed
-        elif key == K_s:
+        elif key == 's':
             self.position -= self.lookAt.to_point() * self.movement_speed
-        elif key == K_a:
+        elif key == 'a':
             right = self.lookAt.cross(Vector(Point(0, 1, 0))).to_point()
             self.position -= right * self.movement_speed
-        elif key == K_d:
+        elif key == 'd':
             right = self.lookAt.cross(Vector(Point(0, 1, 0))).to_point()
             self.position += right * self.movement_speed
-        elif key == K_UP:
+        elif key == 'up':
             pitch = math.asin(self.lookAt.to_point().y)
             pitch += math.radians(self.rotation_speed)
             length = self.lookAt.to_point().length()
             self.lookAt = Vector(
                 Point(self.lookAt.to_point().x, math.sin(pitch), -math.cos(pitch))).normalize() * length
-        elif key == K_DOWN:
+        elif key == 'down':
             pitch = math.asin(self.lookAt.to_point().y)
             pitch -= math.radians(self.rotation_speed)
             length = self.lookAt.to_point().length()
             self.lookAt = Vector(
                 Point(self.lookAt.to_point().x, math.sin(pitch), -math.cos(pitch))).normalize() * length
-        elif key == K_LEFT:
+        elif key == 'left':
             yaw = math.atan2(self.lookAt.to_point().y, self.lookAt.to_point().x)
             yaw += math.radians(self.rotation_speed)
             length = self.lookAt.to_point().length()
             self.lookAt = Vector(Point(math.cos(yaw), math.sin(yaw), -self.lookAt.to_point().z)).normalize() * length
-        elif key == K_RIGHT:
+        elif key == 'right':
             yaw = math.atan2(self.lookAt.to_point().y, self.lookAt.to_point().x)
             yaw -= math.radians(self.rotation_speed)
             length = self.lookAt.to_point().length()
             self.lookAt = Vector(Point(math.cos(yaw), math.sin(yaw), -self.lookAt.to_point().z)).normalize() * length
 
     def generate_rays(self):
-            rays = []
-            for y in range(self.screenHeight):
-                ray = []
-                for x in range(self.screenWidth):
-                    # Нормализуем координаты пикселя от -1 до 1
-                    pixel_x = (2 * ((
-                                            x + 0.5) / self.screenWidth) - 1) * self.screenWidth / self.screenHeight * self.drawDistance / self.screenDistance
-                    pixel_y = (1 - 2 * (y + 0.5) / self.screenHeight) * self.drawDistance / self.screenDistance
-
-                    # Вычисляем направление луча для данного пикселя
-                    direction = Vector(Point(pixel_x, pixel_y, -self.drawDistance))
-                    direction = direction.normalize()
-                    # Создаем луч, исходящий из позиции камеры в данном направлении
-                    ray.append(Ray(self.position, direction))
-                rays.append(ray)
-            return rays
-
-    def generate_rays2(self):
         rays = []
         for y in range(self.screenHeight):
             ray = []
             for x in range(self.screenWidth):
                 # Нормализуем координаты пикселя от -1 до 1
-                pixel_x = (2 * ((
-                                        x + 0.5) / self.screenWidth) - 1) * self.screenWidth / self.screenHeight * self.drawDistance / self.screenDistance
+                pixel_x = (2 * ((x + 0.5) / self.screenWidth) - 1) * self.screenWidth / self.screenHeight * self.drawDistance / self.screenDistance
                 pixel_y = (1 - 2 * (y + 0.5) / self.screenHeight) * self.drawDistance / self.screenDistance
 
                 # Вычисляем направление луча для данного пикселя
                 direction = Vector(Point(pixel_x, pixel_y, -self.drawDistance))
-                direction = direction.rotate_vector(self.calculate_yaw(), self.calculate_pitch(), 0)
                 direction = direction.normalize()
-
-                # Поворачиваем направление луча с учетом взгляда камеры
-                direction = direction.rotate_vector(self.lookAt.to_point().x, self.lookAt.to_point().y,
-                                                    self.lookAt.to_point().z)
-
                 # Создаем луч, исходящий из позиции камеры в данном направлении
                 ray.append(Ray(self.position, direction))
             rays.append(ray)
         return rays
+
+    # def generate_rays2(self):
+    #     rays = []
+    #     for y in range(self.screenHeight):
+    #         ray = []
+    #         for x in range(self.screenWidth):
+    #             # Нормализуем координаты пикселя от -1 до 1
+    #             pixel_x = (2 * ((
+    #                                     x + 0.5) / self.screenWidth) - 1) * self.screenWidth / self.screenHeight * self.drawDistance / self.screenDistance
+    #             pixel_y = (1 - 2 * (y + 0.5) / self.screenHeight) * self.drawDistance / self.screenDistance
+    #
+    #             # Вычисляем направление луча для данного пикселя
+    #             direction = Vector(Point(pixel_x, pixel_y, -self.drawDistance))
+    #             direction = direction.rotate_vector(self.calculate_yaw(), self.calculate_pitch(), 0)
+    #             direction = direction.normalize()
+    #
+    #             # Поворачиваем направление луча с учетом взгляда камеры
+    #             direction = direction.rotate_vector(self.lookAt.to_point().x, self.lookAt.to_point().y,
+    #                                                 self.lookAt.to_point().z)
+    #
+    #             # Создаем луч, исходящий из позиции камеры в данном направлении
+    #             ray.append(Ray(self.position, direction))
+    #         rays.append(ray)
+    #     return rays
 
     def rotate(self, delta_yaw, delta_pitch):
         self.yaw += delta_yaw
@@ -372,6 +368,7 @@ class Parameters:
     def scale(self, factor):
         # масштабирование коэффициентов на заданный коэффициент
         return Parameters(self.a / factor, self.b / factor, self.c / factor, self.d / (factor ** 2))
+
 
 
 class Plane(Object):
@@ -559,38 +556,42 @@ class Console(Canvas):
             screen.append(consol)
         max_val = contrast
         min_val = 0
-        symbols = [' ', '░', '▒', '▓', '█']
-        # symbols = [' ', '.', ':', 'o', 'O', '+', '*', 'x', 'X', '%', '#', '=', '-', '~', ':', '^', 'v', '<', '>', '1',
-        #            '2', '3', '4', '5', '6']
-        if max_val - min_val != 0:
-            scale_factor = (len(symbols) - 1) / (max_val - min_val)
+        symbols =" ~@#$%^&*.O"
 
-            depth_map = []
-            for i in screen:
-                dt = []
-                for val in i:
-                    depth = round((val - min_val) * scale_factor)
-                    dt.append(depth)
-                depth_map.append(dt)
+        scale_factor = (len(symbols) - 1) / (max_val - min_val) if max_val - min_val != 0 else 0
+        depth_map = [[round((val - min_val) * scale_factor) if max_val - min_val != 0 else 0 for val in i] for i in
+                     screen]
 
-
-
-        else:
-            depth_map = []
-            for i in screen:
-                dt = []
-                for val in i:
-                    depth = round((val - min_val) * 0)
-                    dt.append(depth)
-                depth_map.append(dt)
-
+        text_list = []
         for i in depth_map:
             for j in i:
-                print(symbols[j] * 2, end="")
-            print()
-
+                text_list.append(symbols[j] * 2)
+            text_list.append('\n')
+        text = ''.join(text_list)
+        print(text)
 
 class Player:
     def __int__(self, speed, position, camera):
         super().__init__(speed, position, camera)
         init()  # Инициализация player
+
+class Events:
+    def __init__(self):
+        self.handlers = {}
+
+    def append(self, event_name):
+        self.handlers[event_name] = []
+
+    def handle(self, event_name, handler):
+        if event_name in self.handlers:
+            self.handlers[event_name].append(handler)
+        else:
+            print(f"Event '{event_name}' does not exist.")
+
+    def trigger(self, event_name):
+        if event_name in self.handlers:
+            handlers = self.handlers[event_name]
+            for handler in handlers:
+                handler()
+        else:
+            print(f"Event '{event_name}' does not exist.")
